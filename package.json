@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "description": "Play life as a game",
-  "repository": "https://github.com/dalesEwerton/lifeisagame.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dalesEwerton/lifeisagame.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.7.7",
@@ -34,5 +37,11 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/dalesEwerton/lifeisagame/issues"
+  },
+  "homepage": "https://github.com/dalesEwerton/lifeisagame#readme",
+  "main": "karma.conf.js",
+  "author": "Dales Fragoso"
 }
