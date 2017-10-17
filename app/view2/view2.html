@@ -1,239 +1,147 @@
-<!DOCTYPE html>
-<html>
-<head>
-
-
-<link rel="stylesheet" type="text/css" href="view2/calendar.css">
-<link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
-
-<script>
-
-	$(document).ready(function() {
-	    var date = new Date();
-		var d = date.getDate();
-		var m = date.getMonth();
-		var y = date.getFullYear();
-		
-		/*  className colors
-		
-		className: default(transparent), important(red), chill(pink), success(green), info(blue)
-		
-		*/		
-		
-		  
-		/* initialize the external events
-		-----------------------------------------------------------------*/
-	
-		$('#external-events div.external-event').each(function() {
-		
-			// create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-			// it doesn't need to have a start or end
-			var eventObject = {
-				title: $.trim($(this).text()) // use the element's text as the event title
-			};
-			
-			// store the Event Object in the DOM element so we can get to it later
-			$(this).data('eventObject', eventObject);
-			
-			// make the event draggable using jQuery UI
-			$(this).draggable({
-				zIndex: 999,
-				revert: true,      // will cause the event to go back to its
-				revertDuration: 0  //  original position after the drag
-			});
-			
-		});
-	
-	
-		/* initialize the calendar
-		-----------------------------------------------------------------*/
-		
-		var calendar =  $('#calendar').fullCalendar({
-			header: {
-				left: 'title',
-				center: 'agendaDay,agendaWeek,month',
-				right: 'prev,next today'
-			},
-			editable: true,
-			firstDay: 1, //  1(Monday) this can be changed to 0(Sunday) for the USA system
-			selectable: true,
-			defaultView: 'month',
-			
-			axisFormat: 'h:mm',
-			columnFormat: {
-                month: 'ddd',    // Mon
-                week: 'ddd d', // Mon 7
-                day: 'dddd M/d',  // Monday 9/7
-                agendaDay: 'dddd d'
-            },
-            titleFormat: {
-                month: 'MMMM yyyy', // September 2009
-                week: "MMMM yyyy", // September 2009
-                day: 'MMMM yyyy'                  // Tuesday, Sep 8, 2009
-            },
-			allDaySlot: false,
-			selectHelper: true,
-			select: function(start, end, allDay) {
-				var title = prompt('Event Title:');
-				if (title) {
-					calendar.fullCalendar('renderEvent',
-						{
-							title: title,
-							start: start,
-							end: end,
-							allDay: allDay
-						},
-						true // make the event "stick"
-					);
-				}
-				calendar.fullCalendar('unselect');
-			},
-			droppable: true, // this allows things to be dropped onto the calendar !!!
-			drop: function(date, allDay) { // this function is called when something is dropped
-			
-				// retrieve the dropped element's stored Event Object
-				var originalEventObject = $(this).data('eventObject');
-				
-				// we need to copy it, so that multiple events don't have a reference to the same object
-				var copiedEventObject = $.extend({}, originalEventObject);
-				
-				// assign it the date that was reported
-				copiedEventObject.start = date;
-				copiedEventObject.allDay = allDay;
-				
-				// render the event on the calendar
-				// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-				$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-				
-				// is the "remove after drop" checkbox checked?
-				if ($('#drop-remove').is(':checked')) {
-					// if so, remove the element from the "Draggable Events" list
-					$(this).remove();
-				}
-				
-			},
-			
-			events: [
-				{
-					title: 'All Day Event',
-					start: new Date(y, m, 1)
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d-3, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d+4, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					title: 'Meeting',
-					start: new Date(y, m, d, 10, 30),
-					allDay: false,
-					className: 'important'
-				},
-				{
-					title: 'Lunch',
-					start: new Date(y, m, d, 12, 0),
-					end: new Date(y, m, d, 14, 0),
-					allDay: false,
-					className: 'important'
-				},
-				{
-					title: 'Birthday Party',
-					start: new Date(y, m, d+1, 19, 0),
-					end: new Date(y, m, d+1, 22, 30),
-					allDay: false,
-				},
-				{
-					title: 'Click for Google',
-					start: new Date(y, m, 28),
-					end: new Date(y, m, 29),
-					url: 'http://google.com/',
-					className: 'success'
-				}
-			],			
-		});
-		
-		
-	});
-
-</script>
-<style>
-
-	body {
-	    margin-bottom: 40px;
-		margin-top: 40px;
-		text-align: center;
-		font-size: 14px;
-		font-family: 'Roboto', sans-serif;
-		background:url(http://www.digiphotohub.com/wp-content/uploads/2015/09/bigstock-Abstract-Blurred-Background-Of-92820527.jpg);
-		}
-		
-	#wrap {
-		width: 1100px;
-		margin: 0 auto;
-		}
-		
-	#external-events {
-		float: left;
-		width: 150px;
-		padding: 0 10px;
-		text-align: left;
-		}
-		
-	#external-events h4 {
-		font-size: 16px;
-		margin-top: 0;
-		padding-top: 1em;
-		}
-		
-	.external-event { /* try to mimick the look of a real event */
-		margin: 10px 0;
-		padding: 2px 4px;
-		background: #3366CC;
-		color: #fff;
-		font-size: .85em;
-		cursor: pointer;
-		}
-		
-	#external-events p {
-		margin: 1.5em 0;
-		font-size: 11px;
-		color: #666;
-		}
-		
-	#external-events p input {
-		margin: 0;
-		vertical-align: middle;
-		}
-
-	#calendar {
-/* 		float: right; */
-        margin: 0 auto;
-		width: 900px;
-		background-color: #FFFFFF;
-		  border-radius: 6px;
-        box-shadow: 0 1px 2px #C3C3C3;
-		-webkit-box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
--moz-box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
-box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
-		}
-
-</style>
+<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+ 
+<title>PSAU- CVM</title>
+<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 </head>
+
+<html>
 <body>
-<div id='wrap'>
-
-<div id='calendar'></div>
-
-<div style='clear:both'></div>
+<div class="container-fluid" style="background-color:#125477">
+ 
 </div>
-</body>
+
+<div class="container-fluid">
+
+    <div class="container" style="height:300;">
+        <div class="panel-footer"  id="foundationbanner">
+            <br>
+            <a href=""> <img src="https://scontent.frec7-1.fna.fbcdn.net/v/t1.0-9/22491736_10209846726035436_5001168628206979623_n.jpg?oh=fee570bd2d64560fb7f0841916446c85&oe=5A7BFE55" class="img-thumbnail hidden-xs" height="280" width="200" style="margin-top:130;"> </a>    
+        </div>
+    </div>
+    
+    <br>
+    
+    <div class="container">
+        <div class="panel-footer">
+            <ol class="breadcrumb pull-right">
+                 <li><a href="Cvm-home.html" data-toggle="tooltip" data-placement="top"title="Home"> Home </a></li>
+                 <li><a href="Cvm-history.html" data-toggle="tooltip" data-placement="top"title="Know about the history ofcvm and milestone">History</a></li>
+                 <li><a href="Cvm-facilities.html">Status</a></li>
+                 <li><a href="Cvm-students.html">Students</a></li>
+                 <li><a href="Cvm-library.html">Library</a></li>
+                 <li><a href="Cvm-mystatus.html">My Bot</a></li>
+             </ol>
+        </div>
+    </div>
+    
+    <br>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 hidden-sm hidden-xs">
+                <div class="panel-footer" style="height:330;">  
+                
+                <br>
+                <ul class="w3-ul">
+                  <li class="w3-hover-red">Home</li>
+                  <li class="w3-hover-red">Profile</li>
+                  <li class="w3-hover-red">Activities</li>
+                  <li class="w3-hover-red">Topic one</li>
+                  <li class="w3-hover-red">Topic two</li>
+                  <li class="w3-hover-red">Topic three</li>
+                  <li class="w3-hover-red">more Link here</li>
+                  <li class="w3-hover-red">more Link here</li>
+                  <li class="w3-hover-red">more Link here</li>
+                </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="panel-footer" style="height:1000px;max-width:1000px;">
+                            <h5 class="text-info"><b> LIVE UPDATES </b></h5>
+                            <div class="tabbable-panel">
+                                <div class="tabbable-line">
+                                    <ul class="nav nav-tabs ">
+                                        <li class="active">
+                                            <a href="#tab_default_1" data-toggle="tab">
+                                            News</a>
+                                        </li>
+                                        
+                                        <li>
+                                            <a href="#tab_default_2" data-toggle="tab">
+                                             Activities </a>
+                                        </li>
+                                        
+                                        <li>
+                                            <a href="#tab_default_3" data-toggle="tab">
+                                             History </a>
+                                        </li>
+                                        
+                                        <li>
+                                            <a href="#tab_default_4" data-toggle="tab">
+                                             Videos </a>
+                                        </li>
+                                        
+                                        <li>
+                                            <a href="#tab_default_5" data-toggle="tab">
+                                             Pictures </a>
+                                        </li>
+                                        
+                                        <li>
+                                            <a href="#tab_default_6" data-toggle="tab">
+                                             Help </a>
+                                        </li>
+                                    </ul>
+                                    
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="tab_default_1" active>
+                                            <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        
+                                        <div class="tab-pane" id="tab_default_2">
+                                            <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        
+                                        <div class="tab-pane" id="tab_default_3">
+                                        <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        
+                                        <div class="tab-pane" id="tab_default_4">
+                                        <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        
+                                        <div class="tab-pane" id="tab_default_5">
+                                        <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        <div class="tab-pane" id="tab_default_6">
+                                        <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        
+                                        <div class="tab-pane" id="tab_default_7">
+                                        <h1>ENTER TITLE CONTENT HERE</h1>
+                                            <p>Enter your images / paragraphhs here </p>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>          
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+
+<link rel="stylesheet" type="text/css" href="view2/profile.css">
 </html>

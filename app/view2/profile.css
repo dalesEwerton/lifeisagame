@@ -1,0 +1,16 @@
+body {
+  background-color:lightgray;
+}
+
+#footercompanyinfo {
+  color:gray;font-size:12px;
+}
+
+#foundationbanner {
+  background-color: white;
+  background-image: url("http://www.planwallpaper.com/static/images/494303a2cb59b5103ed095867f3d5dbd.jpg");
+  background-repeat: no-repeat;
+  background-attachment: center;
+  background-position: right;
+  background-size: 100%,100%;
+}
